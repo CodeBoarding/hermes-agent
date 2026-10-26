@@ -55,3 +55,13 @@ def test_image_attachment_points_at_vision_analyze(conn, tmp_path):
     txt_line = next(line for line in ctx.splitlines() if "`notes.txt`" in line)
     assert "vision_analyze" in png_line
     assert "vision_analyze" not in txt_line
+
+
+def test_empty_image_destination_does_not_break_worker_context(conn):
+    tid = kb.create_task(conn, title="review the screenshot")
+    kb.add_comment(conn, tid, author="desktop", body="![unfinished](<>) ![shot](/att/shot.png)")
+
+    ctx = kb.build_worker_context(conn, tid)
+
+    assert "Image attached: `/att/shot.png`" in ctx
+    assert "Image attached: ``" not in ctx

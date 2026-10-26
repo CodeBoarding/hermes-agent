@@ -30,7 +30,7 @@ _CTX_MAX_COMMENT_BYTES  = 2 * 1024   # per comment
 
 # Desktop comment images: ``![alt](path)``, or ``![alt](<path>)`` when the path has spaces/parens;
 # backslashes (and ``<>`` inside the angle form) arrive escaped (drawer-comments.tsx imageMarkdown).
-_MD_IMAGE_RE = re.compile(r"!\[(?:\\.|[^\]\\])*\]\((?:<((?:\\.|[^<>\\\n])*)>|([^\s()]+))\)")
+_MD_IMAGE_RE = re.compile(r"!\[(?:\\.|[^\]\\])*\]\((?:<((?:\\.|[^<>\\\n])+)>|([^\s()]+))\)")
 
 
 def comment_image_lines(body: Optional[str]) -> list[str]:

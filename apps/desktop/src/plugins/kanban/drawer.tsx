@@ -55,12 +55,7 @@ import {
   uploadAttachment,
   useKanbanScope
 } from './api'
-import {
-  AttachmentImages,
-  CommentComposer,
-  CommentImage,
-  type UploadImage
-} from './drawer-comments'
+import { AttachmentImages, CommentComposer, CommentImage, type UploadImage } from './drawer-comments'
 import { ModelOverrideField, overridePatch } from './model-override'
 import {
   type Diagnostic,
