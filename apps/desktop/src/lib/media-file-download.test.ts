@@ -4,7 +4,7 @@ import { setApiRequestConnection, setApiRequestProfile } from '@/api/client'
 import { $notifications, clearNotifications } from '@/store/notifications'
 import { $connection } from '@/store/session'
 
-import { captureGatewayFileDownload } from './media'
+import { captureGatewayFileDownload, captureGatewayFileRead } from './media'
 
 beforeEach(() => {
   clearNotifications()
@@ -21,6 +21,28 @@ afterEach(() => {
 })
 
 const lastToast = () => $notifications.get()[0]
+
+describe('captured gateway file read', () => {
+  it('reads from the task owner after the foreground connection and profile change', async () => {
+    const dataUrl = 'data:image/png;base64,aW1hZ2U='
+    const api = vi.fn().mockResolvedValue({ dataUrl })
+    vi.stubGlobal('hermesDesktop', { api })
+    setApiRequestConnection('task-host')
+    setApiRequestProfile('reviewer')
+    const read = captureGatewayFileRead()
+
+    setApiRequestConnection('other-host')
+    setApiRequestProfile('other-profile')
+    $connection.set({ connectionId: 'other-host', mode: 'remote', profile: 'other-profile' } as never)
+
+    await expect(read('/attachments/shot (1).png')).resolves.toBe(dataUrl)
+    expect(api).toHaveBeenCalledWith({
+      connectionId: 'task-host',
+      profile: 'reviewer',
+      path: '/api/fs/read-data-url?path=%2Fattachments%2Fshot%20(1).png'
+    })
+  })
+})
 
 describe('captured gateway file download', () => {
   it('reports an unavailable desktop bridge', async () => {
